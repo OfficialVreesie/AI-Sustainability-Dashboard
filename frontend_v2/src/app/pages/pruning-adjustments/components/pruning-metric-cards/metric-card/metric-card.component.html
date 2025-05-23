@@ -1,0 +1,10 @@
+<div class="metric-card" [style]="'background-color: ' + color.background">
+  <span class="metric-card__title" [style]="'color: ' + color.header">
+    {{ metric.title }}
+  </span>
+  <div class="metric-card__value">
+    <span class="metric-card__value__number" [style]="'color: ' + color.value">
+      {{ (value$ | async) }} {{ metric.unit }}
+    </span>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="pruning-adjustments">
+  <app-pruning-top-bar />
+  <hr>
+  <app-pruning-settings
+    [formGroup]="settingsFormGroup"
+  />
+  <app-pruning-metric-cards
+    [metrics]="metricCards"
+  />
+  <app-pruning-details [activeTab]="activeTab" (activeTabChange)="onTabChange($event)">
+    <app-pruning-charts *ngIf="activeTab === 'Charts'" />
+    <app-pruning-classes
+      *ngIf="activeTab === 'Performance per Class'"
+      [classes]="classPerformance"
+    />
+  </app-pruning-details>
+</div>

@@ -1,0 +1,7 @@
+<div class="metrics-cards">
+  @for(metric of metrics; track metric.title) {
+    <app-metric-card
+      [metric]="metric"
+    />
+  }
+</div>

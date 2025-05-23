@@ -1,0 +1,18 @@
+<div class="class-performance">
+  <span class="class-performance__name">
+    {{ class.className }}
+  </span>
+
+  <app-metric-bar
+    [type]="'original'"
+    [value]="class.original"
+    [unit]="class.unit"
+  />
+
+  <app-metric-bar
+    [type]="'pruned'"
+    [value]="(value$ | async)!"
+    [unit]="class.unit"
+    [pctChange]="pctChange"
+  />
+</div>

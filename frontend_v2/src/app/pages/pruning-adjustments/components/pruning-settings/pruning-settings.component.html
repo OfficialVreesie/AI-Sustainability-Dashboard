@@ -1,0 +1,27 @@
+<div class="pruning-settings">
+  <app-form-input-select
+    [label]="'GPU Model'"
+    [placeholder]="'Select a GPU model'"
+    [options]="gpus"
+    [control]="formGroup.controls.gpu"
+  />
+  <app-form-input-select
+    [label]="'Location'"
+    [placeholder]="'Select a location'"
+    [options]="locations"
+    [control]="formGroup.controls.location"
+  />
+  <app-form-input-select
+    [label]="'Performance Metric'"
+    [placeholder]="'Select a metric'"
+    [options]="metrics"
+    [control]="formGroup.controls.metric"
+  />
+  <app-form-input-slider
+    [label]="'Performance Threshold'"
+    [min]="0"
+    [max]="3"
+    [step]="0.1"
+    [control]="formGroup.controls.threshold"
+  />
+</div>

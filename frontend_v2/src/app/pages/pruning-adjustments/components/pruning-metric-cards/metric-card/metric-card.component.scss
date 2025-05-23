@@ -1,0 +1,31 @@
+:host {
+  width: 100%;
+}
+
+.metric-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  border-radius: 8px;
+
+  &__title {
+    color: var(--color-text-primary);
+    padding: 0 0 8px 0;
+    font-weight: 500;
+  }
+
+  &__value {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+
+    &__number {
+      font-size: 2rem;
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+  }
+}
