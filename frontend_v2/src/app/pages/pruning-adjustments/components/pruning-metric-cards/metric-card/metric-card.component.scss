@@ -23,9 +23,26 @@
     gap: 1rem;
 
     &__number {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 500;
       color: var(--color-text-primary);
+    }
+  }
+
+  &__change {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &__icon {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    &__value {
+      font-size: 0.875rem;
     }
   }
 }

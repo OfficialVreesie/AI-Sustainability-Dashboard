@@ -6,9 +6,13 @@ import {BehaviorSubject} from 'rxjs';
 })
 export class ThresholdService {
 
-  public threshold = new BehaviorSubject<number>(0.0);
+  public threshold = new BehaviorSubject<number>(0);
 
   public set Threshold(threshold: number) {
     this.threshold.next(threshold);
+  }
+
+  public get Threshold(): number {
+    return this.threshold.getValue();
   }
 }

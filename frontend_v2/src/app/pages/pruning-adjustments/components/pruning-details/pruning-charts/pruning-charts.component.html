@@ -1,1 +1,33 @@
-<p>pruning-charts works!</p>
+<div class="grid">
+  <div class="grid__left">
+    <div class="chart-container">
+      <app-chart
+        [chartTitle]="'Power Consumption (per 1K predictions)'"
+        [xAxisLabel]="'Threshold'"
+        [yAxisLabel]="'Power Consumption (kWh)'"
+        [data]="powerChartData | async"
+        [scientificNotation]="true"
+      />
+    </div>
+    <div class="chart-container">
+      <app-chart
+        [chartTitle]="'Carbon Emissions (per 1K predictions)'"
+        [xAxisLabel]="'Threshold'"
+        [yAxisLabel]="'Carbon Emissions (gCO2)'"
+        [data]="emissionsChartData | async"
+        [scientificNotation]="true"
+      />
+    </div>
+  </div>
+  <div class="grid__right">
+    <div class="chart-container">
+      <app-chart
+        [chartTitle]="'Predicted Accuracy'"
+        [xAxisLabel]="'Threshold'"
+        [yAxisLabel]="'Accuracy (%)'"
+        [data]="performanceChartData | async"
+        [rounding]="1"
+      />
+    </div>
+  </div>
+</div>

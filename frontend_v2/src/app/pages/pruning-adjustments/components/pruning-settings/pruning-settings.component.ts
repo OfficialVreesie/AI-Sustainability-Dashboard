@@ -18,27 +18,9 @@ import {PruneSettingsFormGroup} from '@app/types/pruning.types';
 export class PruningSettingsComponent {
 
   @Input() formGroup: PruneSettingsFormGroup;
-
-  public gpus = [
-    { value: 'NVIDIA A100', label: 'NVIDIA A100' },
-    { value: 'NVIDIA V100', label: 'NVIDIA V100' },
-    { value: 'NVIDIA T4', label: 'NVIDIA T4' }
-  ];
-
-  public locations = [
-    { value: 'france', label: 'France' },
-    { value: 'netherlands', label: 'Netherlands' },
-    { value: 'germany', label: 'Germany' }
-  ];
-
-  public metrics = [
-    { value: 'accuracy', label: 'Accuracy' },
-    { value: 'f1', label: 'F1' },
-    { value: 'precision', label: 'Precision' },
-    { value: 'recall', label: 'Recall' }
-  ];
-
-
+  @Input() gpus: { value: string, label: string }[] = [];
+  @Input() locations: { value: string, label: string }[] = [];
+  @Input() metrics: { value: string, label: string }[] = [];
 
   constructor(
     private readonly router: Router,

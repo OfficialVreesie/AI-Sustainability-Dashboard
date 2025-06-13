@@ -9,13 +9,14 @@ interface PruneSettingsFormControls {
 
 export type PruneSettingsFormGroup = FormGroup<PruneSettingsFormControls>;
 
+export type PruningMetricCardList = {
+  [key in 'power' | 'performance' | 'emissions' | 'compute']: PruningMetricCard;
+};
+
 export interface PruningMetricCard {
-  type: 'power' | 'performance' | 'carbon' | 'compute';
   title: string;
   unit: string;
-  values: {
-    [threshold: number]: number;
-  }
+  values: Record<number, number>
 }
 
 export interface PruningClassPerformance {
@@ -29,3 +30,16 @@ export interface PruningClassPerformance {
 
 export type PruningTab = 'Charts' | 'Performance per Class';
 
+
+export interface PruningSettings {
+  gpus: string[];
+  locations: string[];
+  metrics: string[];
+}
+
+export interface PruningPlaygroundData {
+  tflops: Record<number, number>;
+  power: Record<number, number>;
+  emissions: Record<number, number>;
+  performance: Record<number, number>;
+}

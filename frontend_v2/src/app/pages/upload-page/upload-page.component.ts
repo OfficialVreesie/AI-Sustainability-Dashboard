@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {AbstractControl, FormBuilder, FormsModule, ValidationErrors, Validators} from '@angular/forms';
 import {FormInputTextComponent} from '@app/domains/ui/components/forms/form-input-text/form-input-text.component';
 import {FormInputFileComponent} from '@app/domains/ui/components/forms/form-input-file/form-input-file.component';
@@ -6,6 +6,8 @@ import {ButtonDirective} from '@app/domains/ui/directives/button/button.directiv
 import {NgIf} from '@angular/common';
 import {Router} from '@angular/router';
 import {UploadService} from '@app/services/upload.service';
+import {WebsocketService} from '@app/services/websocket.service';
+import {firstValueFrom, map, throwError} from 'rxjs';
 
 @Component({
   selector: 'app-upload-page',
@@ -14,12 +16,13 @@ import {UploadService} from '@app/services/upload.service';
     FormInputTextComponent,
     FormInputFileComponent,
     ButtonDirective,
-    NgIf
+    NgIf,
   ],
+  standalone: true,
   templateUrl: './upload-page.component.html',
   styleUrl: './upload-page.component.scss'
 })
-export class UploadPageComponent {
+export class UploadPageComponent implements OnDestroy {
 
   private eitherOrValidator(controlNames: string[]): (group: AbstractControl) => ValidationErrors | null {
     return (group: AbstractControl): ValidationErrors | null => {
@@ -47,7 +50,7 @@ export class UploadPageComponent {
   }
 
   public uploadFormGroup = this.formBuilder.group({
-    huggingfaceUrl: this.formBuilder.control<string | null>(null),
+    huggingfaceModel: this.formBuilder.control<string | null>(null),
     h5Model: this.formBuilder.control<File | null>(null),
     dataset: this.formBuilder.control<string | null>(null, [Validators.required])
   }, {
@@ -58,6 +61,7 @@ export class UploadPageComponent {
     private readonly formBuilder: FormBuilder,
     private readonly router: Router,
     private readonly uploadService: UploadService,
+    private readonly websocketService: WebsocketService,
   ) {
   }
 
@@ -67,11 +71,36 @@ export class UploadPageComponent {
       return;
     }
 
-    this.uploadService.UploadId = 'abcd';
-    this.uploadService.HuggingFaceUrl = this.uploadFormGroup.controls.huggingfaceUrl.value
-    this.uploadService.H5ModelFilename = this.uploadFormGroup.controls.h5Model.value?.name || null;
+    const formData = new FormData();
 
-    this.router.navigate(["/loading-upload"])
+    const huggingfaceUrl = this.uploadFormGroup.controls.huggingfaceModel.value;
+    if (huggingfaceUrl) {
+      formData.append('huggingface_url', huggingfaceUrl);
+    }
+
+    const h5ModelFile = this.uploadFormGroup.controls.h5Model.value;
+    if (h5ModelFile) {
+      formData.append('model', h5ModelFile);
+    }
+
+    const datasetFile = this.uploadFormGroup.controls.dataset?.value;
+    if (datasetFile) {
+      formData.append('dataset', datasetFile);
+    }
+
+    firstValueFrom(this.uploadService.uploadData(formData).pipe(
+      map(data => data.upload_id),
+    )).then(uploadId => {
+      this.websocketService.UploadId = uploadId;
+
+      this.uploadService.HuggingFaceUrl = this.uploadFormGroup.controls.huggingfaceModel.value
+      this.uploadService.H5ModelFilename = this.uploadFormGroup.controls.h5Model.value?.name || null;
+
+      this.router.navigate(["/loading-upload"]);
+    }).catch(error => {
+      console.error('Upload failed:', error);
+      return throwError(() => new Error('Upload failed'));
+    })
   }
 
   get formIsValid(): boolean {
@@ -85,14 +114,17 @@ export class UploadPageComponent {
 
   get neitherFieldFilledError(): boolean {
     return this.eitherOrError &&
-      !this.uploadFormGroup.controls.huggingfaceUrl.value &&
+      !this.uploadFormGroup.controls.huggingfaceModel.value &&
       !this.uploadFormGroup.controls.h5Model!.value;
   }
 
   get bothFieldsFilledError(): boolean {
     return this.eitherOrError &&
-      this.uploadFormGroup.controls.huggingfaceUrl!.value !== null &&
+      this.uploadFormGroup.controls.huggingfaceModel!.value !== null &&
       this.uploadFormGroup.controls.h5Model!.value !== null;
   }
 
+  ngOnDestroy(): void {
+    this.websocketService.disconnect();
+  }
 }

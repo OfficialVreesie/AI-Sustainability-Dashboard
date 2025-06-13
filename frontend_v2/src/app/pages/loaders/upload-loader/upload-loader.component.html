@@ -4,7 +4,7 @@
       <circle class="progress-ring__circle-bg" cx="150" cy="150" r="120" />
       <circle #progressCircle class="progress-ring__circle" cx="150" cy="150" r="120" />
     </svg>
-    <span class="loader__text">Loading model...</span>
+    <span class="loader__text">{{ message }}</span>
   </div>
 
   <button appButton [primary]="true" (click)="onCancel()">Cancel</button>

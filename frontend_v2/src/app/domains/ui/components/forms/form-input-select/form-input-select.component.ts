@@ -1,13 +1,14 @@
 import {Component, Input} from '@angular/core';
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {NgForOf, NgIf} from '@angular/common';
+import {NgForOf, NgIf, TitleCasePipe} from '@angular/common';
 
 @Component({
   selector: 'app-form-input-select',
   imports: [
     ReactiveFormsModule,
     NgIf,
-    NgForOf
+    NgForOf,
+    TitleCasePipe
   ],
   templateUrl: './form-input-select.component.html',
   styleUrl: './form-input-select.component.scss'

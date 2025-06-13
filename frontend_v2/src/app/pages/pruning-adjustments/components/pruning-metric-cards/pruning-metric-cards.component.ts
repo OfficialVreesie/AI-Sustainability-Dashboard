@@ -2,8 +2,7 @@ import {Component, Input} from '@angular/core';
 import {
   MetricCardComponent
 } from '@app/pages/pruning-adjustments/components/pruning-metric-cards/metric-card/metric-card.component';
-import {NgForOf} from '@angular/common';
-import {PruningMetricCard} from '@app/types/pruning.types';
+import {PruningMetricCardList} from '@app/types/pruning.types';
 
 @Component({
   selector: 'app-pruning-metric-cards',
@@ -15,6 +14,6 @@ import {PruningMetricCard} from '@app/types/pruning.types';
 })
 export class PruningMetricCardsComponent {
 
-  @Input() metrics: PruningMetricCard[]
+  @Input() metrics: PruningMetricCardList
 
 }

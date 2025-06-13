@@ -9,7 +9,7 @@
       {{ placeholder }}
     </option>
     <option *ngFor="let option of options" [value]="option.value">
-      {{ option.label }}
+      {{ option.label | titlecase }}
     </option>
   </select>
 </div>

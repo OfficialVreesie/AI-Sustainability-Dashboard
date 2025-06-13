@@ -14,16 +14,22 @@ import {Router} from '@angular/router';
 export class PruningTopBarComponent {
 
   public modelName: string = '';
+  public uploadId: string = '';
 
   constructor(
     private readonly router: Router,
     private readonly uploadService: UploadService,
   ) {
-    if (!this.uploadService.modelName) {
+    if (!this.uploadService.uploadId) {
       this.router.navigate(['/upload']);
     }
 
-    this.modelName = this.uploadService.modelName!;
+    this.uploadId = this.uploadService.uploadIdValue!;
+  }
+
+  public onBack(): void {
+    this.uploadService.clearUploadId();
+    this.router.navigate(['/upload']);
   }
 
 }

@@ -4,7 +4,13 @@
   </span>
   <div class="metric-card__value">
     <span class="metric-card__value__number" [style]="'color: ' + color.value">
-      {{ (value$ | async) }} {{ metric.unit }}
+      {{ (value$ | async) | number: decimalFormat }} {{ metric.unit }}
     </span>
+    <div class="metric-card__change"
+         *ngIf="(percentageChange$ | async) !== null"
+         [style]="'color: ' + getPercentageChangeColor(changeType$ | async)">
+      <span class="metric-card__change__icon">{{ changeIcon$ | async }}</span>
+      <span class="metric-card__change__value">{{ (percentageChange$ | async) | number: '1.0-1' }}%</span>
+    </div>
   </div>
 </div>
