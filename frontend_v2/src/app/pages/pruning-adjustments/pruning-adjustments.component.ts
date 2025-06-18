@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {
   PruneSettingsFormGroup,
   PruningClassPerformance,
@@ -29,6 +29,7 @@ import {
 })
 export class PruningAdjustmentsComponent implements OnInit, OnDestroy {
 
+  public isMobileMenuOpen = false;
   public gpus: { value: string, label: string }[] = [];
   public locations: { value: string, label: string }[] = [];
   public metrics: { value: string, label: string }[] = [];
@@ -216,6 +217,33 @@ export class PruningAdjustmentsComponent implements OnInit, OnDestroy {
       this.settingsFormGroup.controls.threshold.setValue(0);
       this.settingsService.Threshold = 0;
     })
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+
+    if (window.innerWidth <= 768) {
+      if (this.isMobileMenuOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    if (event.target.innerWidth > 768 && this.isMobileMenuOpen) {
+      this.isMobileMenuOpen = false;
+      document.body.style.overflow = ''; // Reset body scroll
+    }
+  }
+
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscapeKey(event: KeyboardEvent) {
+    if (this.isMobileMenuOpen) {
+      this.toggleMobileMenu();
+    }
   }
 
   onTabChange(newTab: PruningTab): void {

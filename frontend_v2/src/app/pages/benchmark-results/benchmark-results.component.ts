@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, OnInit} from '@angular/core';
 import {
   BenchmarkMenuLeftComponent
 } from '@app/pages/benchmark-results/components/benchmark-menu-left/benchmark-menu-left.component';
@@ -26,6 +26,7 @@ export class BenchmarkResultsComponent implements OnInit {
 
   private uploadId: string | null;
 
+  public isMobileMenuOpen = false;
   public benchmarkData: BenchmarkData | undefined;
   public metricCards$ = new BehaviorSubject<BenchmarkMetricCardList | null>(null);
   public classPerformances$ = new BehaviorSubject<ClassPerformance[]>([]);
@@ -90,6 +91,33 @@ export class BenchmarkResultsComponent implements OnInit {
       }
       this.classPerformances$.next(classPerformances);
     });
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+
+    if (window.innerWidth <= 768) {
+      if (this.isMobileMenuOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    if (event.target.innerWidth > 768 && this.isMobileMenuOpen) {
+      this.isMobileMenuOpen = false;
+      document.body.style.overflow = ''; // Reset body scroll
+    }
+  }
+
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscapeKey(event: KeyboardEvent) {
+    if (this.isMobileMenuOpen) {
+      this.toggleMobileMenu();
+    }
   }
 
 }

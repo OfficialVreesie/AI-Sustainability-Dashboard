@@ -1,13 +1,16 @@
 :host {
   width: 100%;
   height: 100%;
-  display: block; // Added for better layout consistency
+  display: flex; // Changed from block to flex
+  flex-direction: column; // Stack content vertically
 }
 
 .chart-container {
   width: 100%;
   height: 100%;
+  flex: 1; // Allow container to grow
   box-sizing: border-box;
+  min-height: 0; // Important for flex children
 }
 
 #chart > ::ng-deep svg {
@@ -17,6 +20,8 @@
 }
 
 #chart {
+  width: 100%;
+  height: 100%;
 
   .axis text {
     font-family: sans-serif;
