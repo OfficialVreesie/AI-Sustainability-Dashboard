@@ -56,3 +56,4 @@ venv.bak/
 uploads/*
 !uploads/demo/
 !uploads/demo/**
+uploads/demo/flag.json

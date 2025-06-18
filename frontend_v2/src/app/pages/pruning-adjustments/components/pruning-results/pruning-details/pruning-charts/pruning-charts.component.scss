@@ -1,41 +1,3 @@
-//:host {
-//  width: 100%;
-//  height: 100%;
-//}
-//
-//.grid {
-//  display: flex;
-//  flex-direction: row;
-//  width: 100%;
-//  height: 100%;
-//  gap: 1rem;
-//
-//  &__left {
-//    display: flex;
-//    height: 100%;
-//    width: 100%;
-//    flex-direction: column;
-//    gap: 1rem;
-//  }
-//
-//  &__right {
-//    display: flex;
-//    width: 100%;
-//    flex-direction: column;
-//    gap: 1rem;
-//  }
-//}
-//
-//.chart-container {
-//  height: 100%;
-//  box-sizing: border-box;
-//}
-
-
-
-
-
-
 :host {
   width: 100%;
   height: 100%;
@@ -45,30 +7,20 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 100%;
+  min-height: 550px;
   gap: 1rem;
 
   &__left,
-  &__right { // Combine the rules for left and right as they are identical
+  &__right {
     display: flex;
     flex: 1;
-    height: 100%;
     flex-direction: column;
     gap: 1rem;
   }
 }
 
-// THIS IS THE KEY CHANGE:
-// We target the .chart-container DIRECTLY inside the columns.
 .grid__left > .chart-container,
 .grid__right > .chart-container {
-  flex: 1; // This tells the chart containers to grow and fill the vertical space
-  min-height: 0; // A crucial addition to prevent overflow issues with flexbox
+  flex: 1;
+  min-height: 0;
 }
-
-/*
-  You can now REMOVE the old .chart-container rule, as `flex: 1` handles the height.
-  .chart-container {
-    height: 100%; // This is no longer needed
-  }
-*/
