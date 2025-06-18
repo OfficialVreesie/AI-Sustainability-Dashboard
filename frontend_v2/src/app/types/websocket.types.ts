@@ -7,4 +7,7 @@ export interface WebsocketResponse {
 
 export interface WebsocketMessageRequest {
   type: 'start' | 'validate';
+  threshold?: number;
+  gpu: string | null;
+  location: string | null;
 }

@@ -1,7 +1,4 @@
 import numpy as np
-import pandas as pd
-import torch
-import copy
 from scipy.special import softmax
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
 
@@ -29,11 +26,32 @@ def evaluate_model(model, tokenizer, df):
     overall_f1 = f1_score(true_labels, predictions, average='weighted', zero_division=0)
     overall_precision = precision_score(true_labels, predictions, average='weighted', zero_division=0)
     overall_recall = recall_score(true_labels, predictions, average='weighted', zero_division=0)
-    metrics = {
-        'overall_accuracy': overall_accuracy,
-        'overall_f1': overall_f1,
-        'overall_precision': overall_precision,
-        'overall_recall': overall_recall
+
+    # Calculate the same metrics for each class
+    unique_labels = np.unique(true_labels)
+    class_metrics = {}
+    for label in unique_labels:
+        class_indices = [i for i, l in enumerate(true_labels) if l == label]
+        class_predictions = [predictions[i] for i in class_indices]
+        class_true_labels = [true_labels[i] for i in class_indices]
+
+        class_accuracy = accuracy_score(class_true_labels, class_predictions)
+        class_f1 = f1_score(class_true_labels, class_predictions, average='weighted', zero_division=0)
+        class_precision = precision_score(class_true_labels, class_predictions, average='weighted', zero_division=0)
+        class_recall = recall_score(class_true_labels, class_predictions, average='weighted', zero_division=0)
+
+        class_metrics[label] = {
+            'accuracy': class_accuracy,
+            'f1_score': class_f1,
+            'precision': class_precision,
+            'recall': class_recall
+        }
+
+    class_metrics['overall'] = {
+        'accuracy': overall_accuracy,
+        'f1_score': overall_f1,
+        'precision': overall_precision,
+        'recall': overall_recall
     }
     
-    return metrics
+    return class_metrics

@@ -5,16 +5,20 @@ import { Directive, HostBinding, Input } from '@angular/core';
 })
 export class ButtonDirective {
 
-  @Input() primary: boolean = false;
-  @Input() secondary: boolean = false;
+  @Input() ecogreen: boolean = false;
+  @Input() deeptrust: boolean = false;
+  @Input() fairbeige: boolean = false;
+  @Input() transparent: boolean = false;
   @Input() fullWidth: boolean = false;
 
   @HostBinding('class') get classes() {
     return {
       'button': true,
-      'button__primary': this.primary,
-      'button__secondary': this.secondary,
-      'button__full-width': this.fullWidth,
+      'button__ecogreen': this.ecogreen,
+      'button__deeptrust': this.deeptrust,
+      'button__fairbeige': this.fairbeige,
+      'button__transparent': this.transparent,
+      'button__full-width': this.fullWidth
     };
   }
 }

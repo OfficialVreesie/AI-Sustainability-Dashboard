@@ -1,0 +1,17 @@
+:host {
+  width: 100%;
+  height: 100vh;
+}
+
+.benchmark-results {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+  padding: 5rem;
+  box-sizing: border-box;
+  background-color: var(--color-fair-beige);
+}

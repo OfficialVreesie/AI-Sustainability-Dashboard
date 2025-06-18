@@ -53,4 +53,6 @@ ENV/
 env.bak/
 venv.bak/
 
-uploads
+uploads/*
+!uploads/demo/
+!uploads/demo/**

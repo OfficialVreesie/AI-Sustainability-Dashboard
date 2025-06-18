@@ -39,7 +39,7 @@ function App() {
       // Using our API service to handle the fetching and loading states
       const data = await benchmarkModel(modelUrl, threshold, setBenchmarkMessage);
       setModelData(data);
-      setCurrentView('benchmark-results');
+      setCurrentView('benchmark-details');
     } catch (error) {
       console.error('Error:', error);
       // Handle error case - could set an error state here
@@ -98,7 +98,7 @@ function App() {
             handleCancel={handleBenchmarkCancel} 
           />
         );
-      case 'benchmark-results':
+      case 'benchmark-details':
 
         const data = benchmarkData;
 

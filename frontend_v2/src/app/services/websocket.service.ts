@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {WebsocketMessageRequest, WebsocketResponse} from '@app/types/websocket.types';
+import {environment} from '@env/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
 
-  public uploadId = new BehaviorSubject<string | null>(null);
+  private readonly apiUrl = `${environment.api.websocketProtocol}://${environment.api.hostname}`;
 
+  public uploadId = new BehaviorSubject<string | null>(null);
   private websocket: WebSocket | null = null;
   private messagesSubject = new Subject<WebsocketResponse>();
   private connectionStatusSubject = new BehaviorSubject<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected');
@@ -35,21 +37,18 @@ export class WebsocketService {
       throw new Error('Upload ID is not set. Please set the UploadId before connecting.');
     }
 
-    const wsUrl = `ws://localhost:8000/ws/${uploadId}`;
-    console.log('Connecting to WebSocket:', wsUrl);
+    const wsUrl = `${this.apiUrl}/ws/${uploadId}`;
 
     this.connectionStatusSubject.next('connecting');
     this.websocket = new WebSocket(wsUrl);
 
     this.websocket.onopen = (event) => {
-      console.log('WebSocket connected:', event);
       this.connectionStatusSubject.next('connected');
     };
 
     this.websocket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('WebSocket message received:', data);
         this.messagesSubject.next(data);
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -57,7 +56,6 @@ export class WebsocketService {
     };
 
     this.websocket.onclose = (event) => {
-      console.log('WebSocket closed:', event.code, event.reason);
       this.connectionStatusSubject.next('disconnected');
       this.websocket = null;
     };

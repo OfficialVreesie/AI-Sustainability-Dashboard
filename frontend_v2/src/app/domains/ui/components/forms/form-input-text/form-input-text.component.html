@@ -1,5 +1,5 @@
 <div class="form-input-text">
-  <label for="control">{{ label }}</label>
+  <label for="control" *ngIf="label">{{ label }}</label>
   <input
     [type]="type"
     id="control"

@@ -11,7 +11,9 @@ from typing import Optional
 
 from websocket import websocket_endpoint
 from utils.metrics import calculate_power_consumption, calculate_emissions
+from demo import get_benchmark_from_csv
 
+DEMO_MODE = os.getenv("DEMO", "false").lower() == "true"
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -48,7 +50,7 @@ app = FastAPI(title="HuggingFace API", description="API for HuggingFace URL and 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  # Angular dev server default port
+    allow_origins=["http://localhost:4200", "https://dashboard2.alexandervreeswijk.com"],  # Angular dev server default port
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -60,6 +62,9 @@ async def upload_data_test(
     model: Optional[UploadFile] = File(None),
     dataset: Optional[UploadFile] = File(None)
 ):
+    if DEMO_MODE:
+        return {"upload_id": 'demo'}
+
     try:    
         has_huggingface_url = (
             huggingface_url and 
@@ -118,11 +123,9 @@ async def upload_data_test(
         print(f"Test error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
     
-
 @app.websocket("/ws/{upload_id}")
 async def websocket_route(websocket: WebSocket, upload_id: str):
     await websocket_endpoint(websocket, upload_id)
-
 
 @app.get("/settings")
 def get_settings():
@@ -169,7 +172,69 @@ def get_chart_data(upload_id: str, gpu: str, location: str):
 
     return JSONResponse(content=response_data)
 
+@app.get("/benchmark/{upload_id}")
+def get_benchmark_data(upload_id: str):
+    upload_path = os.path.join(UPLOAD_DIR, upload_id)
+
+    if DEMO_MODE:
+        # Get the flag.txt file and read the json data
+        flag_path = os.path.join(upload_path, "flag.json")
+        if not os.path.exists(flag_path):
+            raise HTTPException(status_code=404, detail="Data not found")
+        with open(flag_path, "r") as f:
+            data = json.load(f)
+        
+        model = data.get("model", "my-model")
+        threshold = data.get("threshold", 0)
+        gpu = data.get("gpu", "NVIDIA A100")
+        location = data.get("location", "france")
+
+        benchmark_data = get_benchmark_from_csv(model, upload_id, threshold, gpu, location)
+        return JSONResponse(content=benchmark_data)
+    
+    # Load the benchmark_data.json file
+    benchmark_data_path = os.path.join(upload_path, f"benchmark_data.json")
+    if not os.path.exists(benchmark_data_path):
+        raise HTTPException(status_code=404, detail="Benchmark data not found")
+    
+    with open(benchmark_data_path, "r") as f:
+        benchmark_data = json.load(f)
+
+    gpu = benchmark_data.get("gpu", None)
+    location = benchmark_data.get("location", None)
+
+    if not gpu or not location:
+        raise HTTPException(status_code=400, detail="GPU and location must be specified in the benchmark data")
+    
+    gpu = GRAPHICSCARD_MAPPING.get(gpu)
+    carbon_intensity = LOCATION_CARBON_MAPPING.get(location)
+
+    original_flops = benchmark_data.get("originalFlops", 0)
+    pruned_flops = benchmark_data.get("prunedFlops", 0)
+    
+    benchmark_data["metricCards"] = {
+        "power": {
+            "original": calculate_power_consumption(gpu, original_flops),
+            "pruned": calculate_power_consumption(gpu, pruned_flops),
+        },
+        "performance": {
+            "original": benchmark_data["overall"]["accuracy"]["original"] * 100,
+            "pruned": benchmark_data["overall"]["accuracy"]["pruned"] * 100,
+        },
+        "emissions": {
+            "original": calculate_emissions(gpu, original_flops, carbon_intensity),
+            "pruned": calculate_emissions(gpu, pruned_flops, carbon_intensity),
+        },
+        "compute": {
+            "original": original_flops / 1e12,
+            "pruned": pruned_flops / 1e12,
+        },
+    }
+
+    return JSONResponse(content=benchmark_data)
+
 
 
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

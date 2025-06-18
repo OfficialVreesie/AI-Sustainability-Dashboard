@@ -1,0 +1,10 @@
+<div class="benchmark-results">
+  <app-benchmark-menu-left
+    [data]="benchmarkData"
+  />
+
+  <app-benchmark-details
+    [metricCards]="(metricCards$ | async)"
+    [classes]="(classPerformances$ | async)!"
+  />
+</div>

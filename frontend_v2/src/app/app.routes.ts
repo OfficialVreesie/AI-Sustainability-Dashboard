@@ -2,8 +2,16 @@ import { Routes } from '@angular/router';
 import {UploadPageComponent} from './pages/upload-page/upload-page.component';
 import {PruningAdjustmentsComponent} from './pages/pruning-adjustments/pruning-adjustments.component';
 import {UploadLoaderComponent} from '@app/pages/loaders/upload-loader/upload-loader.component';
+import {LandingPageComponent} from '@app/pages/landing-page/landing-page.component';
+import {BenchmarkLoaderComponent} from '@app/pages/loaders/benchmark-loader/benchmark-loader.component';
+import {BenchmarkResultsComponent} from '@app/pages/benchmark-results/benchmark-results.component';
 
 export const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    component: LandingPageComponent,
+  },
   {
     path: 'upload',
     component: UploadPageComponent,
@@ -17,11 +25,11 @@ export const routes: Routes = [
     component: PruningAdjustmentsComponent,
   },
   {
-    path: 'validation-results',
-    component: PruningAdjustmentsComponent,
+    path: 'loading-benchmark',
+    component: BenchmarkLoaderComponent,
   },
   {
-    path: '**',
-    redirectTo: 'upload',
-  }
+    path: 'benchmark-results',
+    component: BenchmarkResultsComponent,
+  },
 ]

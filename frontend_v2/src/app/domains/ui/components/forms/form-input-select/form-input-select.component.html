@@ -1,5 +1,5 @@
 <div class="form-input-select">
-  <label [for]="id">{{ label }}</label>
+  <label [for]="id" *ngIf="label">{{ label }}</label>
   <select
     [id]="id"
     [formControl]="control"

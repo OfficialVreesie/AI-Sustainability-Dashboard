@@ -1,24 +1,5 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {
-  PruningTopBarComponent
-} from '@app/pages/pruning-adjustments/components/pruning-top-bar/pruning-top-bar.component';
-import {
-  PruningSettingsComponent
-} from '@app/pages/pruning-adjustments/components/pruning-settings/pruning-settings.component';
-import {
-  PruningMetricCardsComponent
-} from '@app/pages/pruning-adjustments/components/pruning-metric-cards/pruning-metric-cards.component';
-import {
-  PruningDetailsComponent
-} from '@app/pages/pruning-adjustments/components/pruning-details/pruning-details.component';
-import {
-  PruningChartsComponent
-} from '@app/pages/pruning-adjustments/components/pruning-details/pruning-charts/pruning-charts.component';
-import {
-  PruningClassesComponent
-} from '@app/pages/pruning-adjustments/components/pruning-details/pruning-classes/pruning-classes.component';
-import {AsyncPipe, NgIf} from '@angular/common';
-import {
   PruneSettingsFormGroup,
   PruningClassPerformance,
   PruningMetricCardList,
@@ -26,21 +7,22 @@ import {
 } from '@app/types/pruning.types';
 import {FormBuilder, Validators} from '@angular/forms';
 import {firstValueFrom, map, Subscription} from 'rxjs';
-import {ThresholdService} from '@app/services/threshold.service';
+import {SettingsService} from '@app/services/settings.service';
 import {PruningDataService} from '@app/services/pruning-data.service';
 import {UploadService} from '@app/services/upload.service';
 import {Router} from '@angular/router';
+import {
+  PruningResultsComponent
+} from '@app/pages/pruning-adjustments/components/pruning-results/pruning-results.component';
+import {
+  PruningMenuLeftComponent
+} from '@app/pages/pruning-adjustments/components/pruning-menu-left/pruning-menu-left.component';
 
 @Component({
   selector: 'app-pruning-adjustments',
   imports: [
-    PruningTopBarComponent,
-    PruningSettingsComponent,
-    PruningMetricCardsComponent,
-    PruningDetailsComponent,
-    PruningChartsComponent,
-    PruningClassesComponent,
-    NgIf,
+    PruningResultsComponent,
+    PruningMenuLeftComponent,
   ],
   templateUrl: './pruning-adjustments.component.html',
   styleUrl: './pruning-adjustments.component.scss'
@@ -54,17 +36,17 @@ export class PruningAdjustmentsComponent implements OnInit, OnDestroy {
   public activeTab: PruningTab = 'Charts';
   public metricCards: PruningMetricCardList = {
     'power': {
-      title: 'Power (per 1K predictions)',
+      title: 'Power (per 1000 calls)',
       unit: 'kWh',
       values: []
     },
     'performance': {
-      title: 'Accuracy',
+      title: 'Predicted accuracy',
       unit: '%',
       values: []
     },
     'emissions': {
-      title: 'Carbon Footprint (per 1K predictions)',
+      title: 'Carbon footprint (per 1000 calls)',
       unit: 'gCO2',
       values: []
     },
@@ -116,7 +98,7 @@ export class PruningAdjustmentsComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly thresholdService: ThresholdService,
+    private readonly settingsService: SettingsService,
     private readonly pruningDataService: PruningDataService,
     private readonly uploadService: UploadService,
     private readonly router: Router,
@@ -126,7 +108,7 @@ export class PruningAdjustmentsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (!this.uploadService.uploadId) {
-      this.router.navigate(['/upload']);
+      this.router.navigate(['/']);
     }
 
     this.subscriptions.add(this.settingsFormGroup.controls.threshold.valueChanges.subscribe(threshold => {
@@ -134,7 +116,7 @@ export class PruningAdjustmentsComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.thresholdService.Threshold = threshold;
+      this.settingsService.Threshold = threshold;
     }))
 
     this.subscriptions.add(this.settingsFormGroup.controls.gpu.valueChanges.subscribe(gpu => {
@@ -142,12 +124,23 @@ export class PruningAdjustmentsComponent implements OnInit, OnDestroy {
         return;
       }
 
+      this.settingsService.Gpu = gpu;
       this.cdr.detectChanges();
       this.loadPruningData();
     }))
 
     this.subscriptions.add(this.settingsFormGroup.controls.location.valueChanges.subscribe(location => {
       if (location === null) {
+        return;
+      }
+
+      this.settingsService.Location = location;
+      this.cdr.detectChanges();
+      this.loadPruningData();
+    }))
+
+    this.subscriptions.add(this.settingsFormGroup.controls.metric.valueChanges.subscribe(metric => {
+      if (metric === null) {
         return;
       }
 
@@ -221,7 +214,7 @@ export class PruningAdjustmentsComponent implements OnInit, OnDestroy {
       this.pruningDataService.Data = data;
 
       this.settingsFormGroup.controls.threshold.setValue(0);
-      this.thresholdService.Threshold = 0;
+      this.settingsService.Threshold = 0;
     })
   }
 

@@ -16,7 +16,7 @@ export class FormInputFileComponent {
 
   public readonly id = `file-upload-${Math.random().toString(36).substring(2, 15)}`;
 
-  @Input() label: string = '';
+  @Input() label: string | null = null;
   @Input() placeholder: string = 'Select a file';
   @Input() control!: FormControl;
   @Input() required: boolean = false;
