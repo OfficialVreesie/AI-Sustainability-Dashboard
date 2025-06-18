@@ -102,7 +102,8 @@ export class UploadModal implements OnDestroy {
       map(data => data.upload_id),
     )).then(uploadId => {
       this.websocketService.UploadId = uploadId;
-
+      
+      this.uploadService.UploadId = uploadId;
       this.uploadService.HuggingFaceUrl = this.uploadFormGroup.controls.huggingfaceModel.value
       this.uploadService.H5ModelFilename = this.uploadFormGroup.controls.h5Model.value?.name || null;
 

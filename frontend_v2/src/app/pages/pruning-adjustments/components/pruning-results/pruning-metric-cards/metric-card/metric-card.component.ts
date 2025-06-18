@@ -25,11 +25,6 @@ export class MetricCardComponent {
   @Input() scientificNotation = false;
 
   public value$: Observable<number> = this.settingsService.threshold.asObservable().pipe(
-    tap(threshold => {
-      if (!(threshold in this.metric.values)) {
-        console.warn(`Threshold ${threshold} not found in metric values for type ${this.type}. Defaulting to 0.`);
-      }
-    }),
     map((threshold) => this.metric.values[threshold] ?? 0),
   );
 
