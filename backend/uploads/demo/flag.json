@@ -1,1 +1,1 @@
-{"model": "sureshs/distilbert-large-sms-spam", "threshold": 7.7, "gpu": "NVIDIA A100", "location": "france"}
+{"model": "sureshs/distilbert-large-sms-spam", "threshold": 1.3, "gpu": "NVIDIA A100", "location": "france"}

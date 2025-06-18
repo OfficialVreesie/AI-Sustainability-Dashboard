@@ -4,9 +4,24 @@
 
 .metrics-cards {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 1rem;
   width: 100%;
+
+  & > * {
+    flex: 1 1 calc(25% - 0.75rem);
+    min-width: 200px;
+  }
+
+  & > *:nth-child(n+3) {
+    @media (max-width: 900px) {
+      margin-top: 1rem;
+    }
+  }
+
+  @media (max-width: 900px) {
+    & > * {
+      flex: 1 1 calc(50% - 0.5rem);
+    }
+  }
 }
