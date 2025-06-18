@@ -90,6 +90,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh; // Use dvh for mobile browser compatibility
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
   opacity: 0;
@@ -154,6 +155,9 @@
   @media (max-width: 768px) {
     padding: 0.5rem;
     padding-top: 1rem;
+    // Ensure content doesn't get cut off by browser UI
+    min-height: 0;
+    height: 100%;
   }
 
   @media (max-width: 480px) {
@@ -167,10 +171,16 @@
   .pruning-adjustments {
     padding: 0; // Remove padding on mobile
     gap: 0; // Remove gap on mobile
+    // Use dvh instead of vh for better mobile support
+    height: 100dvh;
+    min-height: 100dvh;
   }
 
   .menu-toggle {
     display: flex; // Show button only on mobile
+    // Adjust position to account for safe areas on mobile
+    top: max(1rem, env(safe-area-inset-top));
+    right: max(1rem, env(safe-area-inset-right));
   }
 
   .overlay {
@@ -183,20 +193,110 @@
     left: 0;
     width: 320px;
     max-width: 85vw;
-    height: 100vh; // Full height on mobile
+    height: 100vh; // Keep vh for sidebar as it's fixed
+    height: 100dvh; // Use dvh for mobile browser compatibility
     background: var(--color-white); // White background on mobile
     transform: translateX(-100%);
     box-shadow: 2px 0 20px rgba(0, 0, 0, 0.2);
+    // Add safe area padding for devices with notches
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    box-sizing: border-box;
 
     &.active {
       transform: translateX(0);
     }
   }
 
+  .sidebar-content {
+    // Ensure proper scrolling in mobile sidebar
+    height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    overflow-y: auto;
+    padding: 1rem;
+    box-sizing: border-box;
+    // Add momentum scrolling for iOS
+    -webkit-overflow-scrolling: touch;
+  }
+
   .main-content {
     width: 100%;
     height: 100vh;
+    height: 100dvh; // Use dvh for mobile browser compatibility
     overflow-y: auto;
+    box-sizing: border-box;
+    // Add safe area padding
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Landscape Mobile Specific Rules */
+@media (max-width: 768px) and (orientation: landscape) {
+  .pruning-adjustments {
+    // In landscape, we might want to show sidebar by default if there's space
+    // But still keep mobile behavior for very small screens
+  }
+
+  .sidebar {
+    // Ensure sidebar takes full height in landscape
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .sidebar-content {
+    // In landscape, ensure content can scroll properly
+    height: calc(100vh - 2rem); // Account for padding
+    height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    padding: 1rem;
+    box-sizing: border-box;
+    // Smooth scrolling for better UX
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .menu-toggle {
+    // Keep menu toggle visible in landscape
+    display: flex;
+    // Adjust position for landscape
+    top: max(0.5rem, env(safe-area-inset-top));
+    right: max(0.5rem, env(safe-area-inset-right));
+  }
+}
+
+/* Tablet Landscape - Show sidebar by default */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+  .pruning-adjustments {
+    // Show sidebar by default on tablet landscape
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .menu-toggle {
+    display: none; // Hide toggle on tablet landscape
+  }
+
+  .sidebar {
+    position: relative;
+    transform: translateX(0);
+    width: 300px;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .sidebar-content {
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .overlay {
+    display: none;
   }
 }
 
@@ -209,5 +309,52 @@
 @media (max-width: 320px) {
   .sidebar {
     width: 260px;
+  }
+}
+
+// Additional fix for iOS Safari and other mobile browsers
+@supports (height: 100dvh) {
+  :host {
+    height: 100dvh;
+  }
+
+  @media (max-width: 768px) {
+    .pruning-adjustments {
+      height: 100dvh;
+      min-height: 100dvh;
+    }
+
+    .sidebar {
+      height: 100dvh;
+    }
+
+    .main-content {
+      height: 100dvh;
+    }
+
+    .overlay {
+      height: 100dvh;
+    }
+
+    // Landscape specific fixes are handled in separate media queries above
+  }
+}
+
+/* Additional Mobile Landscape Optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sidebar-content {
+    // For very short landscape screens, ensure scrolling works
+    height: calc(100vh - 1rem);
+    height: calc(100dvh - 1rem);
+    padding: 0.5rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .menu-toggle {
+    width: 40px;
+    height: 40px;
+    top: 0.5rem;
+    right: 0.5rem;
   }
 }
